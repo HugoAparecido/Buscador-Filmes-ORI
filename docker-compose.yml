@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  cpp-dev:
+    build: .
+    container_name: cpp_disk_perf
+    volumes:
+      # Mapeia o código-fonte e o diretório de testes diretamente do host
+      # :delegated ou uso nativo no Linux garante que o I/O seja direto
+      - .:/app:delegated
+    # Garante capacidades de debug (GDB) dentro do container
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    # Se você for manipular partições brutas (raw disks), descomente a linha abaixo:
+    # privileged: true
+    stdin_open: true # Permite interatividade (equivalente ao -i)
+    tty: true # Permite terminal (equivalente ao -t)
