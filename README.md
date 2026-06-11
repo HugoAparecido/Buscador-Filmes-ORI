@@ -63,6 +63,12 @@ Agora, envie a sua nova branch com os commits para o GitHub:
 git push origin feature/nome-da-sua-funcao
 ```
 
+Se a branch já exixtir
+
+```bash
+git push --set-upstream origin feature/nome-da-sua-funcao
+```
+
 #### 5. Crie o Pull Request (PR)
 
 1. Acesse a página do repositório no GitHub.
