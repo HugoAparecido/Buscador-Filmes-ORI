@@ -1,0 +1,20 @@
+{
+  "name": "C++ Disk Perf Environment",
+  // Aponta para o seu arquivo Compose
+  "dockerComposeFile": "../docker-compose.yml",
+  // Diz ao VS Code em qual serviço do Compose ele deve se conectar
+  "service": "cpp-dev",
+  // Define a pasta de trabalho (deve bater com o volume montado no Compose)
+  "workspaceFolder": "/app",
+
+  "customizations": {
+    "vscode": {
+      // Instala o pacote de extensões oficiais de C/C++ da Microsoft dentro do contêiner
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-vscode.cmake-tools"
+      ]
+    }
+  }
+}
