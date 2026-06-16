@@ -10,20 +10,13 @@ private:
     ArvoreBPlus* arvore; // Referência para o trabalho do seu colega
 
     // A função de tokenizar continua igualzinha...
-    std::vector<std::string> tokenizar(const std::string& texto) { /* ... */ };
+    std::vector<std::string> tokenizar(const std::string& texto);
 
 public:
     // Construtor: você recebe a árvore pronta
-    IndiceInvertido(ArvoreBPlus* arvore_bplus) : arvore(arvore_bplus) {}
+    IndiceInvertido(ArvoreBPlus* arvore_bplus);
 
-    void construirIndice(const std::string& diretorio) {
-        // ... Lógica de abrir os arquivos continua igual ...
-        
-        // Na hora de salvar, você delega para a árvore dele!
-        for (const std::string& palavra : palavras) {
-            arvore->inserir(palavra, nome_arquivo); 
-        }
-    }
+    void construirIndice(const std::string& diretorio);
 
     std::unordered_set<std::string> buscar(const std::string& termo_busca) {
         std::vector<std::string> palavras_busca = tokenizar(termo_busca);
