@@ -1,34 +1,88 @@
 #include "indice_invertido.h"
 
-std::vector<std::string> IndiceInvertido::tokenizar(const std::string &texto) {};
-
-IndiceInvertido::IndiceInvertido(ArvoreBPlus *arvore_bplus) : arvore(arvore_bplus) {};
-
-void IndiceInvertido::construirIndice(const std::string &diretorio)
+IndiceInvertido::IndiceInvertido(ArvoreBPlus *arvore_bplus)
 {
-    // ... Lógica de abrir os arquivos continua igual ...
+    this->arvore = arvore_bplus;
+    this->proximo_doc_id = 1; // Começamos do ID 1
+}
 
-    // Na hora de salvar, você delega para a árvore dele!
+std::vector<std::string> IndiceInvertido::tokenizar(const std::string &texto)
+{
+    std::vector<std::string> tokens;
+    std::string palavra_atual;
+
+    for (char c : texto)
+    {
+        if (std::isalnum(static_cast<unsigned char>(c)))
+        {
+            palavra_atual += std::tolower(static_cast<unsigned char>(c));
+        }
+        else if (!palavra_atual.empty())
+        {
+            tokens.push_back(palavra_atual);
+            palavra_atual.clear();
+        }
+    }
+    if (!palavra_atual.empty())
+    {
+        tokens.push_back(palavra_atual);
+    }
+    return tokens;
+}
+
+void IndiceInvertido::adicionarRegistro(const std::string &identificador_registro, const std::string &texto_conteudo)
+{
+    // 1. Gera um ID numérico para este registro
+    int doc_id = proximo_doc_id++;
+
+    // 2. Salva o mapeamento (Ex: ID 1 -> "Cliente_João")
+    mapa_documentos[doc_id] = identificador_registro;
+
+    // 3. Limpa e quebra o texto em palavras
+    std::vector<std::string> palavras = tokenizar(texto_conteudo);
+
+    // 4. Manda para a Árvore B+ do seu colega
     for (const std::string &palavra : palavras)
     {
-        arvore->inserir(palavra, nome_arquivo);
+        arvore->inserir(palavra, doc_id);
     }
 }
 
-std::unordered_set<std::string> IndiceInvertido::buscar(const std::string &termo_busca)
+std::vector<std::string> IndiceInvertido::buscar(const std::string &termo_busca)
 {
     std::vector<std::string> palavras_busca = tokenizar(termo_busca);
+    std::vector<std::string> resultados_finais;
+
     if (palavras_busca.empty())
-        return {};
+        return resultados_finais;
 
-    // Em vez de buscar no map, você pede para a árvore do seu colega
-    std::unordered_set<std::string> resultado = arvore->buscar(palavras_busca[0]);
+    // 1. Pede para a Árvore os IDs da primeira palavra
+    std::unordered_set<int> ids_resultado = arvore->buscar(palavras_busca[0]);
 
-    // A lógica de interseção (AND) das outras palavras continua sendo SUA responsabilidade
+    // 2. Faz a interseção com as outras palavras da busca
     for (size_t i = 1; i < palavras_busca.size(); ++i)
     {
-        std::unordered_set<std::string> arquivos_palavra_atual = arvore->buscar(palavras_busca[i]);
-        // ... faz a interseção ...
+        if (ids_resultado.empty())
+            break; // Otimização rápida
+
+        std::unordered_set<int> ids_palavra_atual = arvore->buscar(palavras_busca[i]);
+        std::unordered_set<int> intersecao;
+
+        for (int id : ids_resultado)
+        {
+            if (ids_palavra_atual.find(id) != ids_palavra_atual.end())
+            {
+                intersecao.insert(id);
+            }
+        }
+        ids_resultado = intersecao;
     }
-    return resultado;
+
+    // 3. Traduz os IDs que sobraram de volta para os identificadores originais
+    for (int id : ids_resultado)
+    {
+        resultados_finais.push_back(mapa_documentos[id]);
+    }
+
+    return resultados_finais;
 }

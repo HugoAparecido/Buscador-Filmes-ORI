@@ -4,10 +4,13 @@
 #include <string>
 #include <unordered_set>
 
-class ArvoreBPlus {
+class ArvoreBPlus
+{
 public:
-    void inserir(const std::string& chave, const std::string& valor) { /* ... */ }
-    std::unordered_set<std::string> buscar(const std::string& chave) { /* ... */ }
-};
+    // Ele precisa receber a palavra (string) e o DocID (int)
+    virtual void inserir(const std::string &chave, int doc_id) = 0;
 
+    // Ele precisa devolver um conjunto de DocIDs onde a palavra aparece
+    virtual std::unordered_set<int> buscar(const std::string &chave) = 0;
+};
 #endif
