@@ -20,6 +20,5 @@ services:
     tty: true # Permite terminal (equivalente ao -t)
     environment:
       - DISPLAY=${DISPLAY}
-      - XDG_RUNTIME_DIR=/tmp/runtime-root
     devices:
       - /dev/dri:/dev/dri
