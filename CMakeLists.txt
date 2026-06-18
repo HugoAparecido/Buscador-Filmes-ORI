@@ -9,11 +9,12 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 add_executable(BuscadorFilmes 
+    main.cpp
     arvore_b_plus.cpp 
     indice_invertido.cpp
 )
 
 target_link_libraries(BuscadorFilmes PRIVATE Qt6::Widgets)
 
-add_executable(TesteQt main_qt.cpp)
-target_link_libraries(TesteQt PRIVATE Qt6::Widgets)
+# add_executable(TesteQt main_qt.cpp)
+# target_link_libraries(TesteQt PRIVATE Qt6::Widgets)
