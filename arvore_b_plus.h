@@ -1,17 +1,19 @@
-#ifndef BPlusTree_H
-#define BPlusTree_H
+#ifndef ARVORE_B_PLUS_H
+#define ARVORE_B_PLUS_H
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <unordered_set>
 
 using namespace std;
 
 struct Node {
     bool is_leaf;
-    size_t degree;   // maximum number of children
-    size_t size;     // current number of keys
-    string* item;    // Film names (Keys)
-    int* rrns;       // Relative Record Numbers (Payloads, leaf level only)
+    size_t degree;   
+    size_t size;     
+    string* item;    
+    std::vector<int>* rrns; // <- CORREÇÃO: Agora guarda múltiplos RRNs por palavra
     Node** children;
     Node* parent;
 
@@ -20,7 +22,7 @@ public:
     ~Node();
 };
 
-class BPlusTree {
+class ArvoreBPlus {
 private:
     Node* root;
     size_t degree;
@@ -29,7 +31,10 @@ private:
     Node* BPlusTreeRangeSearch(Node* node, string key);
     int find_index(string* arr, string data, int len);
     string* item_insert(string* arr, string data, int len);
-    int* rrn_insert(int* arr, int rrn, int len, string key, string* key_arr);
+    
+    // Atualizado para lidar com vetor de RRNs
+    std::vector<int>* rrn_insert(std::vector<int>* arr, int rrn, int len, string key, string* key_arr);
+    
     Node** child_insert(Node** child_arr, Node* child, int len, int index);
     Node* child_item_insert(Node* node, string data, Node* child);
     void InsertPar(Node* par, Node* child, string data);
@@ -37,13 +42,16 @@ private:
     void print(Node* cursor);
 
 public:
-    BPlusTree(size_t _degree);
-    ~BPlusTree();
+    ArvoreBPlus(size_t _degree);
+    ~ArvoreBPlus();
 
     Node* getroot();
     int range_search(string start, string end, int* result_rrns, int arr_length);
-    bool search(string data, int& found_rrn);
-    void insert(string key, int rrn);
+    
+    // Atualizado para o Índice Invertido
+    std::unordered_set<int> buscar(string data);
+    void inserir(string key, int rrn);
+    
     void bpt_print();
 };
 

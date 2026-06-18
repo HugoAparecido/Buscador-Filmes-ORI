@@ -1,4 +1,4 @@
-#include "BPlusTree.h"
+#include "arvore_b_plus.h"
 
 // ==========================================
 // NODE STRUCT IMPLEMENTATION
@@ -14,10 +14,8 @@ Node::Node(size_t _degree) {
         this->item[i] = "";
     }
 
-    this->rrns = new int[degree - 1];
-    for (size_t i = 0; i < degree - 1; i++) {
-        this->rrns[i] = -1; // -1 means unassigned/empty
-    }
+    // Agora é um array de vetores (nascem vazios, não precisa iniciar com -1)
+    this->rrns = new std::vector<int>[degree - 1];
 
     this->children = new Node*[degree];
     for (size_t i = 0; i < degree; i++) {
@@ -37,20 +35,20 @@ Node::~Node() {
 // B+ TREE CLASS IMPLEMENTATION
 // ==========================================
 
-BPlusTree::BPlusTree(size_t _degree) {
+ArvoreBPlus::ArvoreBPlus(size_t _degree) {
     this->root = nullptr;
     this->degree = _degree;
 }
 
-BPlusTree::~BPlusTree() {
+ArvoreBPlus::~ArvoreBPlus() {
     clear(this->root);
 }
 
-Node* BPlusTree::getroot() {
+Node* ArvoreBPlus::getroot() {
     return this->root;
 }
 
-Node* BPlusTree::BPlusTreeSearch(Node* node, string key) {
+Node* ArvoreBPlus::BPlusTreeSearch(Node* node, string key) {
     if (node == nullptr) return nullptr;
     Node* cursor = node;
     while (!cursor->is_leaf) {
@@ -71,7 +69,7 @@ Node* BPlusTree::BPlusTreeSearch(Node* node, string key) {
     return nullptr;
 }
 
-Node* BPlusTree::BPlusTreeRangeSearch(Node* node, string key) {
+Node* ArvoreBPlus::BPlusTreeRangeSearch(Node* node, string key) {
     if (node == nullptr) return nullptr;
     Node* cursor = node;
     while (!cursor->is_leaf) {
@@ -89,7 +87,7 @@ Node* BPlusTree::BPlusTreeRangeSearch(Node* node, string key) {
     return cursor;
 }
 
-int BPlusTree::range_search(string start, string end, int* result_rrns, int arr_length) {
+int ArvoreBPlus::range_search(string start, string end, int* result_rrns, int arr_length) {
     int index = 0;
     Node* start_node = BPlusTreeRangeSearch(this->root, start);
     Node* cursor = start_node;
@@ -102,9 +100,12 @@ int BPlusTree::range_search(string start, string end, int* result_rrns, int arr_
         for (size_t i = 0; i < cursor->size; i++) {
             temp = cursor->item[i];
             if ((temp >= start) && (temp <= end)) {
-                if (index >= arr_length) return index;
-                result_rrns[index] = cursor->rrns[i]; // Accumulate mapped RRN identifiers
-                index++;
+                // Adiciona todos os RRNs dessa palavra
+                for(int rrn : cursor->rrns[i]) {
+                    if (index >= arr_length) return index;
+                    result_rrns[index] = rrn;
+                    index++;
+                }
             }
         }
         cursor = cursor->children[cursor->size];
@@ -112,27 +113,30 @@ int BPlusTree::range_search(string start, string end, int* result_rrns, int arr_
     return index;
 }
 
-bool BPlusTree::search(string data, int& found_rrn) {
+std::unordered_set<int> ArvoreBPlus::buscar(string data) {
+    std::unordered_set<int> resultado;
     Node* res = BPlusTreeSearch(this->root, data);
     if (res != nullptr) {
         for (size_t i = 0; i < res->size; i++) {
             if (res->item[i] == data) {
-                found_rrn = res->rrns[i];
-                return true;
+                for(int rrn : res->rrns[i]) {
+                    resultado.insert(rrn);
+                }
+                return resultado;
             }
         }
     }
-    return false;
+    return resultado;
 }
 
-int BPlusTree::find_index(string* arr, string data, int len) {
+int ArvoreBPlus::find_index(string* arr, string data, int len) {
     for (int i = 0; i < len; i++) {
         if (data < arr[i]) return i;
     }
     return len;
 }
 
-string* BPlusTree::item_insert(string* arr, string data, int len) {
+string* ArvoreBPlus::item_insert(string* arr, string data, int len) {
     int index = find_index(arr, data, len);
     for (int i = len; i > index; i--) {
         arr[i] = arr[i - 1];
@@ -141,16 +145,17 @@ string* BPlusTree::item_insert(string* arr, string data, int len) {
     return arr;
 }
 
-int* BPlusTree::rrn_insert(int* arr, int rrn, int len, string key, string* key_arr) {
+std::vector<int>* ArvoreBPlus::rrn_insert(std::vector<int>* arr, int rrn, int len, string key, string* key_arr) {
     int index = find_index(key_arr, key, len);
     for (int i = len; i > index; i--) {
         arr[i] = arr[i - 1];
     }
-    arr[index] = rrn;
+    arr[index] = std::vector<int>(); // Inicializa o novo vetor
+    arr[index].push_back(rrn);
     return arr;
 }
 
-Node** BPlusTree::child_insert(Node** child_arr, Node* child, int len, int index) {
+Node** ArvoreBPlus::child_insert(Node** child_arr, Node* child, int len, int index) {
     for (int i = len; i > index; i--) {
         child_arr[i] = child_arr[i - 1];
     }
@@ -158,7 +163,7 @@ Node** BPlusTree::child_insert(Node** child_arr, Node* child, int len, int index
     return child_arr;
 }
 
-Node* BPlusTree::child_item_insert(Node* node, string data, Node* child) {
+Node* ArvoreBPlus::child_item_insert(Node* node, string data, Node* child) {
     int item_index = 0;
     int child_index = 0;
     for (size_t i = 0; i < node->size; i++) {
@@ -185,7 +190,7 @@ Node* BPlusTree::child_item_insert(Node* node, string data, Node* child) {
     return node;
 }
 
-void BPlusTree::InsertPar(Node* par, Node* child, string data) {
+void ArvoreBPlus::InsertPar(Node* par, Node* child, string data) {
     Node* cursor = par;
     if (cursor->size < this->degree - 1) {
         cursor = child_item_insert(cursor, data, child);
@@ -247,16 +252,24 @@ void BPlusTree::InsertPar(Node* par, Node* child, string data) {
     }
 }
 
-void BPlusTree::insert(string key, int rrn) {
+void ArvoreBPlus::inserir(string key, int rrn) {
     if (this->root == nullptr) {
         this->root = new Node(this->degree);
         this->root->is_leaf = true;
         this->root->item[0] = key;
-        this->root->rrns[0] = rrn;
+        this->root->rrns[0].push_back(rrn);
         this->root->size = 1;
     } else {
         Node* cursor = this->root;
         cursor = BPlusTreeRangeSearch(cursor, key);
+
+        // CORREÇÃO DE ORI: Evita duplicar chaves. Se a palavra já existe, apenas adiciona o RRN na lista.
+        for (size_t i = 0; i < cursor->size; i++) {
+            if (cursor->item[i] == key) {
+                cursor->rrns[i].push_back(rrn);
+                return; 
+            }
+        }
 
         if (cursor->size < (this->degree - 1)) {
             cursor->rrns = rrn_insert(cursor->rrns, rrn, cursor->size, key, cursor->item);
@@ -270,7 +283,7 @@ void BPlusTree::insert(string key, int rrn) {
             Newnode->parent = cursor->parent;
 
             string* item_copy = new string[cursor->size + 1];
-            int* rrn_copy = new int[cursor->size + 1];
+            std::vector<int>* rrn_copy = new std::vector<int>[cursor->size + 1];
             for (size_t i = 0; i < cursor->size; i++) {
                 item_copy[i] = cursor->item[i];
                 rrn_copy[i] = cursor->rrns[i];
@@ -319,7 +332,7 @@ void BPlusTree::insert(string key, int rrn) {
     }
 }
 
-void BPlusTree::clear(Node* cursor) {
+void ArvoreBPlus::clear(Node* cursor) {
     if (cursor != nullptr) {
         if (!cursor->is_leaf) {
             for (size_t i = 0; i <= cursor->size; i++) {
@@ -330,15 +343,21 @@ void BPlusTree::clear(Node* cursor) {
     }
 }
 
-void BPlusTree::bpt_print() { 
+void ArvoreBPlus::bpt_print() { 
     print(this->root); 
 }
 
-void BPlusTree::print(Node* cursor) {
+void ArvoreBPlus::print(Node* cursor) {
     if (cursor != nullptr) {
         for (int i = 0; i < (int)cursor->size; ++i) {
             cout << cursor->item[i];
-            if(cursor->is_leaf) cout << "(RRN:" << cursor->rrns[i] << ")";
+            if(cursor->is_leaf) {
+                cout << "(RRNs: ";
+                for(size_t j=0; j < cursor->rrns[i].size(); j++) {
+                    cout << cursor->rrns[i][j] << (j < cursor->rrns[i].size()-1 ? "," : "");
+                }
+                cout << ")";
+            }
             cout << " ";
         }
         cout << "\n";
