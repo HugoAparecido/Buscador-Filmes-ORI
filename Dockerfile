@@ -8,6 +8,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
+    qt6-base-dev \
+    qt6-base-dev-tools \
+    libgl1-mesa-dev \
+    libxkbcommon-dev \
+    libxcb-cursor0 \
     gdb \
     clang \
     valgrind \
