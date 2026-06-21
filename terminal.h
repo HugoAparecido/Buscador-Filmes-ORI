@@ -35,7 +35,7 @@ private:
 
     // Le o CSV e gera o arquivo filmes.dat
     void importar_csv_para_dat(const std::string &caminho_csv);
-
+    void carregar_indice_do_disco();
     // Funcao auxiliar para separar a linha do CSV lidando com aspas duplas
     std::vector<std::string> quebrar_linha_csv(const std::string &linha);
 };

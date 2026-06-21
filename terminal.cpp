@@ -10,15 +10,30 @@ Terminal::Terminal()
     arvore = new ArvoreBPlus(50); // Grau da arvore
     indice = new IndiceInvertido(arvore);
 
+    // ABRA O ARQUIVO AQUI:
+    arquivo_dados.open("filmes.dat", ios::in | ios::out | ios::binary | ios::app);
+
+    // Se o arquivo não existir, criamos um vazio e reabrimos
+    if (!arquivo_dados.is_open())
+    {
+        arquivo_dados.clear();
+        arquivo_dados.open("filmes.dat", ios::out | ios::binary);
+        arquivo_dados.close();
+        arquivo_dados.open("filmes.dat", ios::in | ios::out | ios::binary | ios::app);
+    }
+
+    // Movemos o ponteiro para o final para checar o tamanho
+    arquivo_dados.seekg(0, ios::end);
+
+    // Agora sim podemos checar se está vazio
     if (arquivo_dados.tellg() == 0)
     {
         cout << "[Sistema] Arquivo de dados vazio.\n";
-        // Certifique-se de que o arquivo .csv esta na mesma pasta do executável
         importar_csv_para_dat("filmes.csv");
     }
 
     // Alimenta a árvore com os filmes que estão no disco
-    // carregar_indice_do_disco();
+    carregar_indice_do_disco();
 }
 
 Terminal::~Terminal()
@@ -28,8 +43,8 @@ Terminal::~Terminal()
         arquivo_dados.close();
     }
     // Liberar memoria das estruturas depois
-    // delete indice;
-    // delete arvore;
+    delete indice;
+    delete arvore;
 }
 
 void Terminal::iniciar()
@@ -94,30 +109,31 @@ void Terminal::buscar_filme()
 
     cout << "\nBuscando por: '" << termo_busca << "'...\n\n";
 
-    // --- INTEGRACAO COM O INDICE INVERTIDO ---
-    /*
-    vector<string> resultados = indice->buscar(termo_busca);
+    // --- INTEGRACAO COM O INDICE INVERTIDO ATIVADA ---
 
-    if (resultados.empty()) {
+    // O indice agora retorna diretamente os inteiros (RRNs)
+    vector<int> resultados = indice->buscar(termo_busca);
+
+    if (resultados.empty())
+    {
         cout << "Nenhum filme encontrado para esses termos.\n";
-    } else {
+    }
+    else
+    {
         cout << "Encontrados " << resultados.size() << " filmes:\n\n";
 
-        for (const string& doc_id_str : resultados) {
-            // Converte o ID retornado pelo indice em RRN numérico
-            long long rrn = stoll(doc_id_str);
-
+        for (int rrn : resultados)
+        {
             Filme f;
-            if (f.ler_rrn(arquivo_dados, rrn)) {
-                f.imprimir(); // Usa o metodo imprimir() que vcs ja criaram em filmes.h
+
+            // Vai direto no disco no byte exato do filme! O(1)
+            if (f.ler_rrn(arquivo_dados, rrn))
+            {
+                f.imprimir();
                 cout << "-----------------------------------------\n";
             }
         }
     }
-    */
-
-    // Remova a linha abaixo quando integrar o codigo acima
-    cout << "[Em construcao: A integracao com a Arvore B+ sera ativada aqui]\n";
 
     pausar();
 }
@@ -207,4 +223,42 @@ void Terminal::importar_csv_para_dat(const string &caminho_csv)
 
     arquivo_csv.close();
     cout << "[Sistema] Sucesso! " << filmes_importados << " filmes convertidos para .dat.\n";
+}
+
+void Terminal::carregar_indice_do_disco()
+{
+    if (!arquivo_dados.is_open())
+    {
+        return;
+    }
+
+    std::cout << "[Sistema] Carregando o indice para a memoria...\n";
+
+    // 1. Limpa as flags de erro (como EOF) e volta para o inicio do arquivo (byte 0)
+    arquivo_dados.clear();
+    arquivo_dados.seekg(0, std::ios::beg);
+
+    Filme f;
+    int rrn = 0; // O primeiro filme no disco esta na posicao 0
+    int filmes_carregados = 0;
+
+    // 2. O metodo ler() avança automaticamente o tamanho exato de um Filme a cada loop.
+    // Ele retorna 'false' quando chega no final do arquivo.
+    while (f.ler(arquivo_dados))
+    {
+        // Extrai o titulo do filme atual
+        std::string titulo = f.obter_titulo();
+
+        // Passa o RRN e o titulo para o Indice Invertido indexar na Arvore B+
+        indice->adicionarRegistro(rrn, titulo);
+
+        filmes_carregados++;
+        rrn++; // O proximo filme lido estara no RRN seguinte
+    }
+
+    std::cout << "[Sistema] " << filmes_carregados << " filmes indexados com sucesso!\n";
+
+    // 3. Volta o ponteiro do arquivo para o inicio para preparar para futuras buscas
+    arquivo_dados.clear();
+    arquivo_dados.seekg(0, std::ios::beg);
 }
