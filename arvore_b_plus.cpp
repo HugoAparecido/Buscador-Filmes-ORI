@@ -293,13 +293,7 @@ void ArvoreBPlus::InsertPar(Node *par, Node *child, string data)
         Newnode->children[Newnode->size] = child_copy[cursor->size + Newnode->size + 1];
         Newnode->children[Newnode->size]->parent = Newnode;
 
-        // Pega a palavra imediatamente anterior àquela que seria promovida
-        string esquerda = item_copy[(this->degree / 2) - 1];
-        // Pega a palavra que seria promovida
-        string direita = item_copy[this->degree / 2];
-
-        // Calcula o prefixo que vai subir para o avô
-        string paritem = obter_prefixo_minimo(esquerda, direita);
+        string paritem = item_copy[this->degree / 2];
 
         delete[] item_copy;
         delete[] child_copy;
