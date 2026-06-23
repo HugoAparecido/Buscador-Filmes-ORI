@@ -8,7 +8,6 @@ services:
       # Mapeia o código-fonte e o diretório de testes diretamente do host
       # :delegated ou uso nativo no Linux garante que o I/O seja direto
       - .:/app:delegated
-      - /tmp/.X11-unix:/tmp/.X11-unix
     # Garante capacidades de debug (GDB) dentro do container
     cap_add:
       - SYS_PTRACE
@@ -19,6 +18,8 @@ services:
     stdin_open: true # Permite interatividade (equivalente ao -i)
     tty: true # Permite terminal (equivalente ao -t)
     environment:
-      - DISPLAY=${DISPLAY}
+      - DISPLAY=:0
+    ports:
+      - "8080:8080"
     devices:
       - /dev/dri:/dev/dri

@@ -15,7 +15,7 @@ add_executable(BuscadorFilmesGUI
 )
 
 target_link_libraries(BuscadorFilmesGUI PRIVATE Qt6::Widgets)
-add_executable(BuscardorFilmesT
+add_executable(BuscadorFilmesT
     main.cpp
     arvore_b_plus.cpp   
     indice_invertido.cpp

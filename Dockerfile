@@ -17,6 +17,11 @@ RUN apt-get update && apt-get install -y \
     clang \
     valgrind \
     git \
+    xvfb \
+    x11vnc \
+    novnc \
+    websockify \
+    openbox \
     && rm -rf /var/lib/apt/lists/*
 
 # Define o diretório de trabalho dentro do container
