@@ -21,6 +21,3 @@ add_executable(BuscardorFilmesT
     indice_invertido.cpp
     terminal.cpp
 )
-
-# add_executable(TesteQt main_qt.cpp)
-# target_link_libraries(TesteQt PRIVATE Qt6::Widgets)
