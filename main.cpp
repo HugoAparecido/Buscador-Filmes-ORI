@@ -1,70 +1,22 @@
-#include <QApplication>
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QLineEdit>
-#include <QTableWidget>
-#include <QHeaderView>
-#include <QLabel>
+#include <iostream>
+#include "teste_prefixo.h"
+#include "terminal.h"
 
-class JanelaCrudFilmes : public QWidget {
-public:
-    JanelaCrudFilmes() {
-        setWindowTitle("Buscador e Gerenciador de Filmes");
-        resize(800, 600);
+int main()
+{
+    // Executa o teste de stress de prefixos
+    TestePrefixo::executar();
+    std::cout << "Inicializando o Buscador de Filmes...\n";
 
-        QVBoxLayout *layoutPrincipal = new QVBoxLayout(this);
+    // Instancia o controlador principal.
+    // Neste exato momento, o construtor do Terminal entra em ação e:
+    // 1. Cria a Arvore B+ e o Indice Invertido na memoria.
+    // 2. Abre o arquivo binario 'filmes.dat'.
+    // 3. Se estiver vazio, le o 'filmes.csv' e converte os dados.
+    // 4. Varre o 'filmes.dat' e carrega os prefixos na Arvore B+.
+    Terminal terminal;
 
-        QHBoxLayout *layoutBusca = new QHBoxLayout();
-        QLineEdit *campoBusca = new QLineEdit();
-        campoBusca->setPlaceholderText("Buscar filme por título, diretor ou ID...");
-        QPushButton *btnBuscar = new QPushButton("Pesquisar");
-        
-        layoutBusca->addWidget(campoBusca);
-        layoutBusca->addWidget(btnBuscar);
-        layoutPrincipal->addLayout(layoutBusca);
-
-        QTableWidget *tabelaFilmes = new QTableWidget(0, 4); 
-        tabelaFilmes->setHorizontalHeaderLabels({"ID", "Título", "Ano", "Gênero"});
-        tabelaFilmes->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-        tabelaFilmes->setSelectionBehavior(QAbstractItemView::SelectRows);
-        
-        layoutPrincipal->addWidget(tabelaFilmes);
-
-        QHBoxLayout *layoutFormulario = new QHBoxLayout();
-        QLineEdit *inputTitulo = new QLineEdit();
-        inputTitulo->setPlaceholderText("Título do Filme");
-        QLineEdit *inputAno = new QLineEdit();
-        inputAno->setPlaceholderText("Ano de Lançamento");
-        QLineEdit *inputGenero = new QLineEdit();
-        inputGenero->setPlaceholderText("Gênero");
-
-        layoutFormulario->addWidget(inputTitulo);
-        layoutFormulario->addWidget(inputAno);
-        layoutFormulario->addWidget(inputGenero);
-        layoutPrincipal->addLayout(layoutFormulario);
-
-        QHBoxLayout *layoutBotoes = new QHBoxLayout();
-        QPushButton *btnAdicionar = new QPushButton("Adicionar Novo");
-        QPushButton *btnAtualizar = new QPushButton("Atualizar Selecionado");
-        QPushButton *btnExcluir = new QPushButton("Excluir Selecionado");
-
-        btnExcluir->setStyleSheet("background-color: #d9534f; color: white; font-weight: bold;");
-        btnAdicionar->setStyleSheet("background-color: #5cb85c; color: white; font-weight: bold;");
-
-        layoutBotoes->addWidget(btnAdicionar);
-        layoutBotoes->addWidget(btnAtualizar);
-        layoutBotoes->addWidget(btnExcluir);
-        layoutPrincipal->addLayout(layoutBotoes);
-    }
-};
-
-int main(int argc, char *argv[]) {
-    QApplication app(argc, argv);
-    
-    JanelaCrudFilmes janela;
-    janela.show();
-    
-    return app.exec();
+    // Inicia o loop interativo do menu (o programa fica rodando aqui dentro)
+    terminal.iniciar();
+    return 0;
 }

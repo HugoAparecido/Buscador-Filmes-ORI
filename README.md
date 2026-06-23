@@ -18,6 +18,31 @@ Acesse o terminal do container para compilar e testar seu código com desempenho
 docker compose exec cpp-dev bash
 ```
 
+### Como Rodar no Terminal
+**1. Para Compilar:**
+
+Abra o terminal na pasta onde está o seu Makefile e digite:
+
+```Bash
+make
+```
+
+Isso vai ler o Makefile, compilar apenas o que foi alterado e gerar o executável.
+
+**2. Para Executar o Programa:**
+
+```Bash
+./gerenciador_de_filmes
+```
+
+**3. Para Limpar o Projeto:**
+
+Apagar o executável e os arquivos .o para forçar uma recompilação do zero depois:
+
+```Bash
+make clean
+```
+
 ### Atualização de repositório
 
 #### 1. Atualize seu repositório local
