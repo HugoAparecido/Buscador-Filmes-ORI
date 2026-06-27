@@ -64,7 +64,7 @@ cmake --build . --target BuscadorFilmesGUI -j16
 
 **Para Executar o Programa:**
 
-Executa run.sh e acesse [text](http://localhost:8080/vnc.html)
+Executa `run.sh` e acesse [a porta 8080](http://localhost:8080/vnc.html)
 
 
 ### 3. Fluxo de Trabalho e Versionamento (Git)
