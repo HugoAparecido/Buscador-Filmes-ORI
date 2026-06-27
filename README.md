@@ -43,7 +43,9 @@ docker compose exec cpp-dev bash
 
 **Para Compilar:**
 
-Abra o terminal na pasta onde está o seu Makefile e digite:
+Build com CMake (Apertando F7) 
+
+ou:
 
 ```Bash
 make
@@ -53,17 +55,8 @@ Isso vai ler o Makefile, compilar apenas o que foi alterado e gerar o executáve
 
 **Para Executar o Programa:**
 
-```Bash
-./gerenciador_de_filmes
-```
+Executa run.sh e acesse [text](http://localhost:8080/vnc.html)
 
-**Para Limpar o Projeto:**
-
-Apagar o executável e os arquivos .o para forçar uma recompilação do zero depois:
-
-```Bash
-make clean
-```
 
 ### 3. Fluxo de Trabalho e Versionamento (Git)
 
@@ -122,7 +115,6 @@ git push --set-upstream origin feature/nome-da-sua-funcao
 3. **Título:** Dê um título claro e resumido.
 4. **Descrição:** Explique o que foi alterado. Se a sua branch resolve um problema específico, mencione qual é.
 5. Clique em **Create pull request**.
-
 
 
 
