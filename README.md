@@ -48,10 +48,19 @@ Build com CMake (Apertando F7)
 ou:
 
 ```Bash
-make
+# 1. Entrar no ambiente do container
+docker compose exec cpp-dev bash
+
+# 2. Criar e entrar na pasta de build (se já não estiver nela)
+mkdir -p build && cd build
+
+# 3. Configurar o CMake
+cmake .. -DCMAKE_BUILD_TYPE=Debug
+
+# 4. Compilar especificamente o alvo da GUI
+cmake --build . --target BuscadorFilmesGUI -j16
 ```
 
-Isso vai ler o Makefile, compilar apenas o que foi alterado e gerar o executável.
 
 **Para Executar o Programa:**
 
