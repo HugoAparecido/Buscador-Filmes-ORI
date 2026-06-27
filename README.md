@@ -59,12 +59,22 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug
 
 # 4. Compilar especificamente o alvo da GUI
 cmake --build . --target BuscadorFilmesGUI -j16
+
+
 ```
+
 
 
 **Para Executar o Programa:**
 
-Executa `run.sh` e acesse [a porta 8080](http://localhost:8080/vnc.html)
+```bash
+# 1. Volte para a raiz do projeto
+cd /app
+
+# 2. Execute run.sh
+./run.sh
+```
+Acesse [a porta 8080 e vá para vnc.html](http://localhost:8080/vnc.html). Clique em "Connect".
 
 
 ### 3. Fluxo de Trabalho e Versionamento (Git)
