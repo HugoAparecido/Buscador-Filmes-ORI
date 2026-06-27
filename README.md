@@ -43,27 +43,39 @@ docker compose exec cpp-dev bash
 
 **Para Compilar:**
 
-Abra o terminal na pasta onde está o seu Makefile e digite:
+Build com CMake (Apertando F7) 
+
+ou:
 
 ```Bash
-make
+# 1. Entrar no ambiente do container
+docker compose exec cpp-dev bash
+
+# 2. Criar e entrar na pasta de build (se já não estiver nela)
+mkdir -p build && cd build
+
+# 3. Configurar o CMake
+cmake .. -DCMAKE_BUILD_TYPE=Debug
+
+# 4. Compilar especificamente o alvo da GUI
+cmake --build . --target BuscadorFilmesGUI -j16
+
+
 ```
 
-Isso vai ler o Makefile, compilar apenas o que foi alterado e gerar o executável.
+
 
 **Para Executar o Programa:**
 
-```Bash
-./gerenciador_de_filmes
+```bash
+# 1. Volte para a raiz do projeto
+cd /app
+
+# 2. Execute run.sh
+./run.sh
 ```
+Acesse [a porta 8080 e vá para vnc.html](http://localhost:8080/vnc.html). Clique em "Connect".
 
-**Para Limpar o Projeto:**
-
-Apagar o executável e os arquivos .o para forçar uma recompilação do zero depois:
-
-```Bash
-make clean
-```
 
 ### 3. Fluxo de Trabalho e Versionamento (Git)
 
@@ -122,7 +134,6 @@ git push --set-upstream origin feature/nome-da-sua-funcao
 3. **Título:** Dê um título claro e resumido.
 4. **Descrição:** Explique o que foi alterado. Se a sua branch resolve um problema específico, mencione qual é.
 5. Clique em **Create pull request**.
-
 
 
 

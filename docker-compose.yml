@@ -17,3 +17,9 @@ services:
     # privileged: true
     stdin_open: true # Permite interatividade (equivalente ao -i)
     tty: true # Permite terminal (equivalente ao -t)
+    environment:
+      - DISPLAY=:0
+    ports:
+      - "8080:8080"
+    # devices:
+    #   - /dev/dri:/dev/dri

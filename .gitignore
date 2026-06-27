@@ -1,3 +1,4 @@
+/.vscode
+/build
 *.dat
-*.csv
 *.csv

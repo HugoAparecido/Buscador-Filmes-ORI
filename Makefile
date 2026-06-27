@@ -6,7 +6,7 @@ CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17
 
 # Encontra todos os .cpp da pasta
-SRCS = $(wildcard *.cpp)
+SRCS = $(filter-out main_qt.cpp, $(wildcard *.cpp))
 
 # Transforma a lista de .cpp em uma lista de .o
 OBJS = $(SRCS:.cpp=.o)
